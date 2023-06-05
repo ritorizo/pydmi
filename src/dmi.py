@@ -26,7 +26,7 @@ class DMI:
         self.image = None
         self.swidth = 32
         self.sheight = 32
-        self.states = []
+        self.states = {}
 
     def load(self):
         self.image = Image.open(self.filepath)
@@ -45,7 +45,7 @@ class DMI:
 
 
 
-        self.states = []
+        self.states = {}
 
         name = ""
         dirs = 1
@@ -56,9 +56,9 @@ class DMI:
             if (text[0] != '\t'):
                 if (len(name)):
                     if (len(delays) > 0):
-                        self.states.append(DmiStateGIF(name, dirs, self, delays.copy()))
+                        self.states[name] = DmiStateGIF(name, dirs, self, delays.copy())
                     else:
-                        self.states.append(DmiStatePNG(name, dirs, self))
+                        self.states[name] = DmiStatePNG(name, dirs, self)
 
                 dirs = 1
                 delays = []
@@ -76,9 +76,9 @@ class DMI:
                 dirs = int(now[1])
 
         index = 0
-        for state in self.states:
-            state.load_from_dmi(index, self)
-            index += state.get_image_count()
+        for key in self.states:
+            self.states[key].load_from_dmi(index, self)
+            index += self.states[key].get_image_count()
 
     def get_image(self, number):
         x = self.swidth * number % self.image._size[0]
@@ -94,9 +94,9 @@ class DMI:
             outdir = Path("out", self.filepath.stem)
         if (not (outdir.exists())):
             outdir.mkdir(parents=True)
-        for state in self.states:
-            state.unpack(outdir)
-            index += state.get_image_count()
+        for key in self.states:
+            self.states[key].unpack(outdir)
+            index += self.states[key].get_image_count()
 
 if __name__=="__main__":
     cwd = os.getcwd()
