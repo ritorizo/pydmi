@@ -35,7 +35,6 @@ class DmiStateGIF(DmiState):
         super().__init__(name, dirs, dmi)
         self.frames = len(delays) 
         self.delays = delays
-        print("gif created")
 
     def load_from_dmi(self, index, dmi):
         for orientation in get_direction_list(self.dirs):
@@ -49,7 +48,6 @@ class DmiStateGIF(DmiState):
         super().unpack(outdir)
         if (len(dirrections) == 0):
             dirrections = self.dirrection
-        print("monkey", len(self.dirrection))
         for orientation in self.dirrection:
             if(separate_frames):
                 for i in range(len(self.dirrection[orientation])):
@@ -86,9 +84,9 @@ class DmiStatePNG(DmiState):
 def get_direction_list(number, circle = True):
     value = []
     if (number > 1):
-        value.append("north", "south", "east", "west")
+        value += ["north", "south", "east", "west"]
     if (number > 4):
-        value.append("northeast", "northwest", "southeast", "southwest")
+        value += ["northeast", "northwest", "southeast", "southwest"]
 
     if(circle):
         value = ['('+x+')' for x in value]
