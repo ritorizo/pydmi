@@ -48,10 +48,7 @@ class DmiState:
             return self.dirrection[self.get_default_dir]
 
     def get_default_dir(self):
-        if(self.dirs > 1):
-            return "north"
-        else:
-            return ""
+        return "north"
 
 class DmiStateGIF(DmiState):
     def __init__(self, name, dirs, dmi, delays):
@@ -61,14 +58,7 @@ class DmiStateGIF(DmiState):
         self.extention = ".gif"
 
     def load_from_dmi(self, index, dmi):
-        #for orientation in get_direction_list(self.dirs, circle=False):
-        #    self.dirrection[orientation] = []
-        #    for i in range(self.frames):
-        #        self.dirrection[orientation].append(dmi.get_image(index))
-        #        index += 1
-        #return self.dirrection
-
-        for orientation in get_direction_list(self.dirs, circle=False):
+        for orientation in get_direction_list(self.dirs):
             self.dirrection[orientation] = []
         for i in range(self.frames):
             for orientation in self.dirrection:
@@ -107,7 +97,7 @@ class DmiStatePNG(DmiState):
         self.extention = ".png"
 
     def load_from_dmi(self, index, dmi):
-        for orientation in get_direction_list(self.dirs, circle=False):
+        for orientation in get_direction_list(self.dirs):
             self.dirrection[orientation] = dmi.get_image(index)
             index += 1
         return self.dirrection
@@ -122,17 +112,14 @@ class DmiStatePNG(DmiState):
                     "PNG"
                 )
 
-def get_direction_list(number, circle = True):
+def get_direction_list(number):
     value = []
     if (number > 1):
         value += ["north", "south", "east", "west"]
     if (number > 4):
         value += ["northeast", "northwest", "southeast", "southwest"]
 
-    if(circle):
-        value = ['('+x+')' for x in value]
-
     if (len(value) == 0):
-        value = [""]
+        value = ["north"]
 
     return value 

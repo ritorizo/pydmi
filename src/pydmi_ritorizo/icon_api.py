@@ -6,8 +6,6 @@ from flask import Flask
 from flask import send_file
 from flask import request
 
-DMI_DELAY_UNIT_DURATION = 100
-
 # Where to pull the icons from
 icon_dir=Path("/home/ritorizo/note/ss13/Shiptest/icons")
 
@@ -33,7 +31,7 @@ def catch_all(_path):
     args = request.args.to_dict()
     path = Path(_path)
 
-    posib_dirs = ["north", ""]
+    orientation = "north"
     
     # Determine dirrection
     if("dir" in args):
@@ -41,24 +39,21 @@ def catch_all(_path):
             print("dirrection '"+args["dir"]+"' not suported")
             return False
 
-        posib_dirs = [args["dir"]]
+        orientation = args["dir"]
 
     #Check all path for existing
     found = False
     image_path = None
-    for posib_end in [x+y for x in posib_dirs for y in [".gif", ".png"]]:
-        image_path = out_dir / (str(path) + posib_end)
-        print(str(image_path))
+    for ext in [".gif", ".png"]:
+        image_path = out_dir / (str(path) + orientation + ext)
         if image_path.exists():
             found = True
-            print("found the image")
             break
     
     if found:
         return send_file(image_path)
-    print("not found the image", len(posib_dirs))
 
-    return send_file(create_icon(path, orientation=(posib_dirs[0] if len(posib_dirs) == 1 else None)))
+    return send_file(create_icon(path, orientation))
 
 def create_icon(path, orientation = None):
     """
@@ -70,6 +65,9 @@ def create_icon(path, orientation = None):
     if orientation == None:
         orientation = state.get_default_dir()
     state.unpack(out_dir / path.parent, [orientation])
+
+    print("created icon", str(out_dir / (str(path)+orientation+state.extention)))
+
     return out_dir / (str(path)+orientation+state.extention)
 
 if __name__ == '__main__':
